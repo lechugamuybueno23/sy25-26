@@ -4,7 +4,10 @@ boss_win = False
 we_win = False
 #User
 health = 100
-shield = 0
+crit = 1
+def crit():
+    #chance for the next attack to deal a multiplied amount of damage
+    print("still doing")
 def heal():
     global health
     chance = r.randint(0,4)
@@ -20,19 +23,28 @@ def hit():
     chance = r.randint(1, 100)
     if chance > 33:
         boss = boss - damage
-        print(f"you dealed {damage} damage")
+        print(f"you dealed {damage} damage, he now has {boss} health")
     else:
         print("you missed")
+def user_turn():
+    choice = input("enter here: ")
+    if choice == "hit":
+        hit()
+    elif choice == "block":
+        shield = shield + 1
+    elif choice == "heal":
+        heal()
 #Boss
 boss = 1000
 def healb():
     global boss
     chance = r.randint(0,6)
+    amount = r.randint(25,75)
     if chance > 2:
-        health = health + 25
-        print(f"you healed, and now you have {health} health")
+        boss = boss + amount
+        print(f"The boss healed {amount} amount, and now he has {boss} health")
     else:
-        print("you didn't heal")
+        print("he try to heal, but didn't")
 def hitb():
     global health
     damage = r.randint(10,30)
@@ -42,16 +54,17 @@ def hitb():
         print(f"you got {damage} damage, you now have {health} health")
     else:
         print("you dodged his attack")
+def boss_turn():
+    choice = r.randint(1,2)
+    if choice == 1:
+        hitb()
+    elif choice == 2:
+        healb()
 
-print("Do you want to hit,block, or heal?")
+
+#Acutal game
+print("Do you want to hit,crit, or heal?")
 
 while we_win == False or boss_win == False:
-    choice = input("enter here: ")
-    if choice == "hit":
-        hit()
-    elif choice == "block":
-        shield = shield + 1
-    elif choice == "heal":
-        heal()
-    else:
-        print("Next turn")
+    user_turn()
+    boss_turn()
