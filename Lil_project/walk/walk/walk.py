@@ -8,6 +8,8 @@ crit = 1
 def crit():
     #chance for the next attack to deal a multiplied amount of damage
     print("still doing")
+    c = r.randint(1,5)
+    if c == 
 def heal():
     global health
     chance = r.randint(0,4)
@@ -28,11 +30,11 @@ def hit():
         print("you missed")
 def user_turn():
     choice = input("enter here: ")
-    if choice == "hit":
+    if choice == "hit" or "h":
         hit()
-    elif choice == "block":
+    elif choice == "block" "b":
         shield = shield + 1
-    elif choice == "heal":
+    elif choice == "heal" or "he":
         heal()
 #Boss
 boss = 1000
