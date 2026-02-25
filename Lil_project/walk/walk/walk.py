@@ -5,11 +5,14 @@ we_win = False
 #User
 health = 100
 crit = 1
+
 def crit():
     #chance for the next attack to deal a multiplied amount of damage
-    print("still doing")
     c = r.randint(1,5)
-    if c == 
+    if c > 3:
+        crit = crit + 1
+    else:
+        print("Couldn't crit")
 def heal():
     global health
     chance = r.randint(0,4)
@@ -21,13 +24,18 @@ def heal():
         print("you didn't heal")
 def hit():
     global boss
+    global crit
     damage = r.randint(50,100)
     chance = r.randint(1, 100)
     if chance > 33:
+        damage = damage * crit
+        if crit > 1:
+            crit = 1
         boss = boss - damage
         print(f"you dealed {damage} damage, he now has {boss} health")
     else:
         print("you missed")
+
 def user_turn():
     choice = input("enter here: ")
     if choice == "hit" or "h":
@@ -36,8 +44,13 @@ def user_turn():
         shield = shield + 1
     elif choice == "heal" or "he":
         heal()
+    elif choice == "crit" or "c":
+        crit()
+    elif choice == "2":
+        health = 99999
 #Boss
 boss = 1000
+
 def healb():
     global boss
     chance = r.randint(0,6)
@@ -56,6 +69,7 @@ def hitb():
         print(f"you got {damage} damage, you now have {health} health")
     else:
         print("you dodged his attack")
+
 def boss_turn():
     choice = r.randint(1,2)
     if choice == 1:
