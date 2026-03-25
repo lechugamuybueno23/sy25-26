@@ -14,17 +14,19 @@ clock = pygame.time.Clock()
 # Player
 player_pos = [WIDTH // 2, HEIGHT - 50]
 player_size = 50
+player_trail = []  # 🔥 store past positions
 
 # Enemy
 enemy_size = 50
 enemy_pos = [random.randint(0, WIDTH - enemy_size), 0]
+enemy_trail = []  # 🔥 enemy trail too
 base_enemy_speed = 8
 enemy_speed = base_enemy_speed
 
 score = 0
 game_over = False
 
-# 🔥 Screen shake variables
+# Screen shake
 shake_intensity = 0
 shake_duration = 0
 
@@ -40,27 +42,21 @@ while not game_over:
     if keys[pygame.K_RIGHT] and player_pos[0] < WIDTH - player_size:
         player_pos[0] += 5  
 
-    # 🎮 DYNAMIC DIFFICULTY SYSTEM
-
-    # 1. Enemy speed fluctuates based on score
+    # 🎮 Dynamic difficulty
     fluctuation = random.uniform(-1.5, 1.5)
     enemy_speed = base_enemy_speed + (score * 0.3) + fluctuation
 
-    # 2. Occasional speed burst (spikes tension)
-    if random.random() < 0.02:  # 2% chance each frame
+    if random.random() < 0.02:
         enemy_speed += random.randint(5, 10)
 
-    # 3. Player slowly grows (makes dodging harder)
     player_size = 50 + (score * 0.5)
-
-    # Clamp player inside screen after size change
     player_pos[0] = max(0, min(player_pos[0], WIDTH - player_size))
 
     # Enemy movement
     enemy_pos[1] += enemy_speed
 
     if enemy_pos[1] > HEIGHT:
-        enemy_size = random.randint(30, 70)  # 4. enemy size variation
+        enemy_size = random.randint(30, 70)
         enemy_pos = [random.randint(0, WIDTH - enemy_size), 0]
         score += 1
         print(f"Score: {score}")
@@ -75,13 +71,13 @@ while not game_over:
         shake_duration = 20
         game_over = True
 
-    # 💥 Near-miss shake
+    # Near miss
     distance = abs(player_pos[0] - enemy_pos[0]) + abs(player_pos[1] - enemy_pos[1])
     if distance < 120 and not player_rect.colliderect(enemy_rect):
         shake_intensity = 3
         shake_duration = 5
 
-    # 🎥 Apply shake
+    # 🎥 Screen shake
     if shake_duration > 0:
         shake_x = random.randint(-int(shake_intensity), int(shake_intensity))
         shake_y = random.randint(-int(shake_intensity), int(shake_intensity))
@@ -91,9 +87,33 @@ while not game_over:
         shake_x = 0
         shake_y = 0
 
+    # 🔥 STORE TRAIL POSITIONS
+    player_trail.append((player_pos[0], player_pos[1], player_size))
+    enemy_trail.append((enemy_pos[0], enemy_pos[1], enemy_size))
+
+    # limit trail length
+    if len(player_trail) > 10:
+        player_trail.pop(0)
+    if len(enemy_trail) > 10:
+        enemy_trail.pop(0)
+
     # Drawing
     screen.fill((0, 0, 0))
-    
+
+    # 🔥 DRAW TRAILS (faded)
+    for i, (x, y, size) in enumerate(player_trail):
+        alpha = int(255 * (i / len(player_trail)))  # fade out
+        surf = pygame.Surface((size, size), pygame.SRCALPHA)
+        surf.fill((0, 0, 255, alpha))
+        screen.blit(surf, (x + shake_x, y + shake_y))
+
+    for i, (x, y, size) in enumerate(enemy_trail):
+        alpha = int(255 * (i / len(enemy_trail)))
+        surf = pygame.Surface((size, size), pygame.SRCALPHA)
+        surf.fill((255, 0, 0, alpha))
+        screen.blit(surf, (x + shake_x, y + shake_y))
+
+    # 🔵 Draw current objects LAST (fully solid)
     pygame.draw.rect(screen, RED, (enemy_pos[0] + shake_x, enemy_pos[1] + shake_y, enemy_size, enemy_size))
     pygame.draw.rect(screen, BLUE, (player_pos[0] + shake_x, player_pos[1] + shake_y, player_size, player_size))
 
