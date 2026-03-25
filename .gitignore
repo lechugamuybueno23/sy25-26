@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+juego/.vs/juego/CopilotIndices/17.14.734.62261/CodeChunks.db
+
+juego/.vs/juego/v17/.suo
+
+*.json
