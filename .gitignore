@@ -213,3 +213,7 @@ juego/.vs/juego/v17/.suo
 *.json
 
 juego/.vs/juego/v17/
+
+*.vsidx
+
+*.db

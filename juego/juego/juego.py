@@ -1,23 +1,21 @@
-import pygame
+﻿import pygame
 import random
-#testds
-# Initialize Pygame
+
 pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 800, 600
-WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-# Player properties
+# Player
 player_pos = [WIDTH // 2, HEIGHT - 50]
 player_size = 50
 
-# Enemy properties
+# Enemy
 enemy_size = 50
 enemy_pos = [random.randint(0, WIDTH - enemy_size), 0]
 enemy_speed = 10
@@ -30,30 +28,30 @@ while not game_over:
         if event.type == pygame.QUIT:
             game_over = True
 
-    #Fixed
+    # Movement
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] and player_pos[0] > 0:
         player_pos[0] -= 5  
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] and player_pos[0] < WIDTH - player_size:
         player_pos[0] += 5  
 
-    # Update enemy position
+    # Enemy movement
     enemy_pos[1] += enemy_speed
 
-    #somewhat fixed, i just copied the enemy pos in the beginning
     if enemy_pos[1] > HEIGHT:
         enemy_pos = [random.randint(0, WIDTH - enemy_size), 0]
-
         score += 1
         print(f"Score: {score}")
 
-    # --- BUG 3: Collision Detection ---
-    # This logic is mathematically incorrect for rectangular collision
-    if (enemy_pos[0] == player_pos[0]) and (enemy_pos[1] == player_pos[1]):
+    # ✅ Collision (NOW INSIDE LOOP)
+    player_rect = pygame.Rect(player_pos[0], player_pos[1], player_size, player_size)
+    enemy_rect = pygame.Rect(enemy_pos[0], enemy_pos[1], enemy_size, enemy_size)
+
+    if player_rect.colliderect(enemy_rect):
         print("Game Over!")
         game_over = True
 
-    # Drawing
+    # ✅ Drawing (ALWAYS RUNS)
     screen.fill((0, 0, 0))
     
     pygame.draw.rect(screen, RED, (enemy_pos[0], enemy_pos[1], enemy_size, enemy_size))
