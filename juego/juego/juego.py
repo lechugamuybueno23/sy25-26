@@ -1,6 +1,6 @@
 ﻿import pygame
 import random
-#t
+
 pygame.init()
 
 # Constants
@@ -18,7 +18,8 @@ player_size = 50
 # Enemy
 enemy_size = 50
 enemy_pos = [random.randint(0, WIDTH - enemy_size), 0]
-enemy_speed = 10
+base_enemy_speed = 8
+enemy_speed = base_enemy_speed
 
 score = 0
 game_over = False
@@ -39,10 +40,27 @@ while not game_over:
     if keys[pygame.K_RIGHT] and player_pos[0] < WIDTH - player_size:
         player_pos[0] += 5  
 
+    # 🎮 DYNAMIC DIFFICULTY SYSTEM
+
+    # 1. Enemy speed fluctuates based on score
+    fluctuation = random.uniform(-1.5, 1.5)
+    enemy_speed = base_enemy_speed + (score * 0.3) + fluctuation
+
+    # 2. Occasional speed burst (spikes tension)
+    if random.random() < 0.02:  # 2% chance each frame
+        enemy_speed += random.randint(5, 10)
+
+    # 3. Player slowly grows (makes dodging harder)
+    player_size = 50 + (score * 0.5)
+
+    # Clamp player inside screen after size change
+    player_pos[0] = max(0, min(player_pos[0], WIDTH - player_size))
+
     # Enemy movement
     enemy_pos[1] += enemy_speed
 
     if enemy_pos[1] > HEIGHT:
+        enemy_size = random.randint(30, 70)  # 4. enemy size variation
         enemy_pos = [random.randint(0, WIDTH - enemy_size), 0]
         score += 1
         print(f"Score: {score}")
@@ -68,7 +86,7 @@ while not game_over:
         shake_x = random.randint(-int(shake_intensity), int(shake_intensity))
         shake_y = random.randint(-int(shake_intensity), int(shake_intensity))
         shake_duration -= 1
-        shake_intensity = max(0, shake_intensity - 0.5)  # smooth fade
+        shake_intensity = max(0, shake_intensity - 0.5)
     else:
         shake_x = 0
         shake_y = 0
